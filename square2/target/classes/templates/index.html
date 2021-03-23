@@ -1,129 +1,51 @@
 <!DOCTYPE HTML>
-<html>
+<html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
 <head>
-    <meta name="viewport" charset="UTF-8" />
+    <meta name="viewport" charset="UTF-8"/>
     <style>
-p {
-    font-family: Arial;
-    padding: 20px;
-}
-.edit {
-  position: absolute;
-  height: 500px;
-  width: 500px;
-  background-color: #fff;
-  border-radius: 5px;
-}
-.header {
-  background-color: #999999;
-  -webkit-user-select: none;
-  cursor: move;
-}
-</style>
+        p {
+            font-family: Arial, serif;
+            padding: 20px;
+        }
+
+        .edit {
+            position: absolute;
+            height: 500px;
+            width: 500px;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+
+        .header {
+            background-color: #999999;
+            -webkit-user-select: none;
+            cursor: move;
+        }
+
+        .text {
+            border-radius: 10px;
+            background-color: #fff;
+            -webkit-user-select: none;
+        }
+
+        .field {
+            font-family: Arial, serif;
+            width: 494px;
+            height: 480px;
+            display: inline-block;
+            font-size: 15px;
+            resize: none;
+        }
+    </style>
 </head>
-<body style = "background-color: #ffcfab">
-<div style = "display: inline-block">
-    <p id = "text" style = "border-radius: 10px; background-color: #fff; -webkit-user-select: none;"> </p>
+<body style="background-color: #ffcfab">
+<div style="display: inline-block">
+    <p id="text" class="text"></p>
 </div>
-<div id = "edit" class = "edit">
-    <div id = "header" class = "header"> ‎‎‏‏‎ ‎</div>
-    <p id = "field" contenteditable="true" onclick="setUserId()" ></p>
+<div id="edit" class="edit">
+    <div id="header" class="header"> ‎‎‏‏‎ ‎</div>
+    <textarea id="field" class = "field" onclick="setUserId()" onkeydown="setUserId(); beginTyping()" onkeyup="stopTyping()"></textarea>
 </div>
-<script type="text/javascript">
-var userId;
-get(4, function () {
-        userId = this;
-        post(4, parseInt(this) + parseInt(1));
-    });
-var first = new Boolean(true);
-var isMoving = new Boolean(false);
-var saved = "";
-setTimeout(update, 10);
-dragElement(document.getElementById(("edit")));
-
-function setUserId() {
-    post(6, userId);
-}
-
-function update() {
-    if (!isMoving || first) {
-    get(1, function () {
-        document.getElementById(("edit")).style.top = this;
-    });
-    get(2, function () {
-        document.getElementById(("edit")).style.left = this;
-    });
-    }
-    get(5, function () {
-        var text = this;
-        get(6, function () {
-            if (text != document.getElementById(("field")).innerHTML && parseInt(this) == userId) {
-                post(5, document.getElementById("field").innerHTML);
-                post(6, userId);
-            }
-            if (text != document.getElementById(("field")).innerHTML && parseInt(this) != userId) {
-                document.getElementById(("field")).innerHTML = text;
-            }
-        });
-        document.getElementById(("text")).innerHTML = text;
-    });
-    setTimeout(update, 20);
-}
-
-
-function post(id, value) {
-    var url = "http://localhost:8080/add";
-    var params = "id=" + id + "&value=" + value;
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", url + "?" + params, true);
-    xhr.send(params);
-}
-
-function get(id, callback) {
-    var url = "http://localhost:8080/get";
-    var params = "id=" + id;
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4 && xhr.status == 200)
-            callback.call(xhr.responseText);
-    };
-    xhr.open("GET", url + "?" + params, true);
-    xhr.send();
-}
-
-function dragElement(elmnt) {
-  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-  document.getElementById("header").onmousedown = dragMouseDown;
-
-
-  function dragMouseDown(e) {
-    e = e || window.event;
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    document.onmouseup = closeDragElement;
-    document.onmousemove = elementDrag;
-    document.getElementById("movecursor").onmousedown=null;
-  }
-
-  function elementDrag(e) {
-    isMoving = true;
-    e = e || window.event;
-    pos1 = pos3 - e.clientX;
-    pos2 = pos4 - e.clientY;
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-    post(1, elmnt.style.top);
-    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-    post(2, elmnt.style.left);
-  }
-
-  function closeDragElement() {
-    isMoving = false;
-    document.onmouseup = null;
-    document.onmousemove = null;
-  }
-}
-</script>
+<script th:src="@{/script.js}"></script>
 </body>
 </html>
